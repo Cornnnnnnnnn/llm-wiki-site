@@ -2,7 +2,20 @@
 
 網站使用 GitHub Pages。只有 `llm-wiki-site` 這個資料夾的內容可以作為儲存庫根目錄上傳。私人目錄、原始 PDF、本機預覽服務與私人草稿都不在發佈範圍內。
 
-## 第一次設定
+## 使用分支發佈（目前選用）
+
+`main` 保留 Astro 網站原始碼。`gh-pages` 只放已建置完成、通過公開內容檢查的網站檔案，入口是分支根目錄的 `index.html`。
+
+在儲存庫 **Settings → Pages** 設定：
+
+1. **Source**：`Deploy from a branch`。
+2. **Branch**：`gh-pages`。
+3. **Folder**：`/(root)`。
+4. 點 **Save**。
+
+建置成品包含 `.nojekyll`，讓 GitHub 直接提供 `_astro` 樣式、程式與字型檔案。之後修改內容仍須先審閱、重新建置，再更新 `gh-pages`；只更新 `main` 不會更新這個分支上的網站。
+
+## 另一種方式：手動工作流程
 
 1. 建立專用 GitHub 儲存庫。若使用 GitHub Free，GitHub Pages 的儲存庫需為 Public。
 2. 上傳網站原始碼，讓 `package.json`、`astro.config.mjs`、`src` 和 `.github` 位於儲存庫最外層。
@@ -18,7 +31,7 @@
 
 使用者已在 2026-11-13 明確核准 `hlm18`、`hly15`、`slice` 三份整理筆記；公開副本已設為 `public/reviewed` 並登錄清單。私人原稿保留在網站以外。未來文章仍須逐篇核准。原始 PDF 與私人註記沒有獲准公開，也沒有加入網站。
 
-工作流程只在手動點選 Run workflow 時執行，不會因為修改檔案而自動發佈。輸出的 `dist/` 才是發佈成品；本機私人預覽從來不會被打包。
+目前選用分支發佈，不必執行自訂 Publish LLM Wiki 工作流程。若未來改用 GitHub Actions 作為 Source，該工作流程才在手動點選 Run workflow 時執行。輸出的 `dist/` 才是發佈成品；本機私人預覽從來不會被打包。
 
 ## 官方說明
 

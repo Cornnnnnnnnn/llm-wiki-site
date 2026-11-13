@@ -30,7 +30,7 @@ Set `ASTRO_TELEMETRY_DISABLED=1` when running Astro. No analytics, remote fonts,
 
 ## GitHub Pages
 
-The manual `.github/workflows/deploy.yml` workflow checks and builds the website, then publishes `dist/` only when the user runs it from GitHub Actions. It has no push trigger. Astro detects GitHub repository metadata for the Pages origin/base. Explicit `SITE_URL` and `BASE_PATH` can override those defaults. Internal navigation and the full-text JSON index respect Astro's base. Review `dist/` before publishing. See `GITHUB_PAGES.md` for setup. No Git command or deployment has been performed locally merely by adding this workflow.
+The selected deployment method is GitHub Pages from the `gh-pages` branch root. That branch contains only the audited `dist/` build and a `.nojekyll` marker, while `main` retains source code. Updating source alone does not update the deployed build. A manual `.github/workflows/deploy.yml` remains available as an alternative if the Pages source is changed to GitHub Actions; it has no push trigger. Astro detects GitHub repository metadata for the Pages origin/base. Explicit `SITE_URL` and `BASE_PATH` can override those defaults. Internal navigation and the full-text JSON index respect Astro's base. See `GITHUB_PAGES.md` for setup.
 
 ## Public assets
 

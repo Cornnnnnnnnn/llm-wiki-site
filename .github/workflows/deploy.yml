@@ -1,0 +1,40 @@
+name: Publish LLM Wiki
+
+# Publication is a manual action, separate from editing or uploading source files.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website source
+        uses: actions/checkout@v7
+      - name: Check, build and prepare approved public pages
+        uses: withastro/action@v6
+        with:
+          node-version: '24'
+          package-manager: pnpm@12.18.0
+          build-cmd: pnpm run check && pnpm test && pnpm run build
+          cache: 'false'
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish website
+        id: deployment
+        uses: actions/deploy-pages@v5

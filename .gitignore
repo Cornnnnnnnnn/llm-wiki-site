@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.cache/
+.pnpm-store/
+.env
+.env.*
+!.env.example
+.DS_Store
+# Defense in depth; actual private workspace must stay outside repository.
+private/
+raw/
+sources/
+drafts/
+*.pem
+*.key

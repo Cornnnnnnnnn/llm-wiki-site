@@ -1,0 +1,32 @@
+---
+import {render,type CollectionEntry} from 'astro:content';
+import Shell from './Shell.astro';
+import {ui,type Locale} from '../i18n/ui';
+import {catalog,publicRelations,href} from '../lib/catalog';
+const {entry,locale='zh-Hant'}=Astro.props as {entry:CollectionEntry<'articles'>,locale:Locale};
+const {Content,headings}=await render(entry);const t=ui[locale];const prefix=locale==='en'?'en/':'';
+const entries=await catalog();const edges=publicRelations(entries);
+const neighborIds=new Set(edges.filter(e=>e.source===entry.id||e.target===entry.id).flatMap(e=>[e.source,e.target]));
+const related=entries.filter(e=>e.id!==entry.id&&neighborIds.has(e.id));
+---
+<Shell locale={locale} page={`articles/${entry.id}/`} title={`${entry.data.title} · LLM Wiki`}>
+<div class="reader container"><aside class="reader-side"><strong>{t.library}</strong><a href={href(prefix)}>← {t.back}</a>{entries.map(e=><a href={href(prefix+`articles/${e.id}/`)} aria-current={e.id===entry.id?'page':undefined}>{e.data.title}</a>)}</aside>
+<article class="reader-main" data-pagefind-body lang={entry.data.language}><div class="reader-meta">{entry.data.subject} · {entry.data.language}</div><h1 data-pagefind-meta="title">{entry.data.title}</h1><p class="reader-summary">{entry.data.summary}</p>
+{entry.data.authors?.length?<p class="reader-meta">{entry.data.authors.join(', ')}{entry.data.year?` · ${entry.data.year}`:''}{entry.data.venue?` · ${entry.data.venue}`:''}</p>:null}
+{entry.data.source.pages?.length?<p class="reader-meta">{t.sources}: {entry.data.source.pages.join(', ')}</p>:null}
+<div class="reader-tabs" data-pagefind-ignore><span>{t.processed}</span><small>{t.original}</small></div>
+<div class="prose"><Content/></div>
+<div id="copy-status" role="status" aria-live="polite" class="reader-meta" data-pagefind-ignore></div>
+<section class="article-relations" data-pagefind-ignore><h2>{t.related}</h2>{related.length?related.map(e=><a href={href(prefix+`articles/${e.id}/`)}>{e.data.title} ↗</a>):<p>{t.noRelated}</p>}</section>
+</article><aside class="toc" aria-label={t.toc}><strong>{t.toc}</strong>{headings.filter(h=>h.depth>=2&&h.depth<=3).map(h=><a style={`padding-left:${h.depth===3?12:0}px`} href={`#${h.slug}`}>{h.text}</a>)}</aside></div>
+<script>
+import {ui,type Locale} from '../i18n/ui';
+const t=ui[document.body.dataset.locale as Locale];
+document.querySelectorAll<HTMLElement>('.prose .katex').forEach(formula=>{
+ const source=formula.querySelector('annotation[encoding="application/x-tex"]')?.textContent;
+ if(!source)return;const button=document.createElement('button');button.className='formula-copy';button.textContent=t.copy;button.setAttribute('data-pagefind-ignore','');
+ button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(source);document.querySelector('#copy-status')!.textContent=t.copied;button.textContent=t.copied;setTimeout(()=>button.textContent=t.copy,1600)}catch{document.querySelector('#copy-status')!.textContent=t.copyFailed}});
+ (formula.closest('.katex-display')||formula).after(button);
+});
+</script>
+</Shell>

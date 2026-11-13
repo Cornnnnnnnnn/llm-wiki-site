@@ -1,0 +1,20 @@
+---
+import '../styles/global.css';
+import {ui,type Locale} from '../i18n/ui';
+import {href} from '../lib/catalog';
+import Icon from './Icon.astro';
+const {locale='zh-Hant',page='library',title='LLM Wiki'}=Astro.props as {locale:Locale,page?:string,title?:string};
+const t=ui[locale]; const prefix=locale==='en'?'en/':'';
+const alternate=href(`${locale==='en'?'':'en/'}${page==='graph'?'graph/':page.startsWith('articles/')?page:''}`);
+---
+<!doctype html><html lang={locale}><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content={t.intro}/><title>{title}</title><link rel="icon" type="image/svg+xml" href={href('favicon.svg')}/>
+<script is:inline>try{const t=localStorage.getItem('starlight-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch{}</script>
+</head><body data-locale={locale}>
+<a class="skip" href="#main">{t.skip}</a>
+<header class="header"><div class="header-inner"><a class="brand" href={href(prefix)} aria-label="LLM Wiki"><span class="brand-mark">W<span>·</span></span><span>LLM <b>Wiki</b><small>NOTES & CONNECTIONS</small></span></a>
+<nav aria-label={t.library}><a class:list={{active:page==='library'}} href={href(prefix)}>{t.library}</a><a class:list={{active:page==='graph'}} href={href(prefix+'graph/')}>{t.graph}</a><a href={href(prefix+'guide/')}>{t.guide}<span class="external">↗</span></a></nav>
+<div class="header-actions"><a class="locale-button" href={alternate} aria-label={t.locale}>{locale==='en'?'繁中':'EN'}</a><span class="divider"></span><button id="theme" class="icon-button" aria-label={t.theme} aria-pressed="false"><Icon name="sun"/></button></div></div></header>
+<main id="main"><slot/></main>
+<footer><a class="footer-brand" href={href(prefix)}>LLM Wiki<span>{t.footer}</span></a><span>MARKDOWN · LATEX · CONNECTIONS</span></footer>
+<script>const themeButton=document.querySelector<HTMLButtonElement>('#theme');function sync(){themeButton?.setAttribute('aria-pressed',String(document.documentElement.dataset.theme==='dark'))}sync();themeButton?.addEventListener('click',()=>{const value=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=value;try{localStorage.setItem('starlight-theme',value)}catch{}sync()});</script>
+</body></html>
